@@ -9,7 +9,7 @@ Here is a high level view of what we are thinking:
 
 ![brainstorm](docs/images/brainstorm.svg)
 
-Office hours will be held every second the third tuesday of a month, calandar link to follow in a little bit.
+Office hours will be held every first the third tuesday of a month, calandar link to follow in a little bit.
 
 Join the discord and stark talking all things assembly line with us!
 [discord](https://discord.gg/SaJFQ8V)
