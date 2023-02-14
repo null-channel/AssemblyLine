@@ -15,3 +15,6 @@
 # vendor/
 target/
 Cargo.lock
+
+# rust
+**/target/*

@@ -1,0 +1,176 @@
+# One 
+name: my-assembly-line
+
+description: a pipeline to build everything
+events:
+- push: #do something on push
+stations:
+- name: Checkout Code
+  id: checkout
+  dependencies:
+    - init
+  steps:
+  - name: install git
+    image: my-git-installer-container
+  - name: checkout Code
+    image: my-checkout-container
+  - name: Something else
+    image: my-something-container
+    cmd: |
+      aux | grep fun
+  - name: rust lint
+    image: rust-container
+  - name: rust checks
+    image: rust-container
+    cmd: |
+      cargo clippy
+
+
+---
+# One to many
+name: my-assembly-line
+
+description: a pipeline to build everything
+events:
+- push: #do something on push
+stations:
+- name: init
+  id: init
+  steps:
+  - name: do a thing
+    image: doing-it
+- name: Checkout Code
+  id: checkout
+  dependencies:
+    - init
+  steps:
+  - name: install git
+    image: my-git-installer-container
+  - name: checkout Code
+    image: my-checkout-container
+  - name: Something else
+    image: my-something-container
+    run: |
+      aux | grep fun
+- name: unit tests
+  dependencies:
+    - checkout
+  steps:
+  - name: rust lint
+    image: rust-container
+  - name: rust checks
+    image: rust-container
+    run: |
+      cargo clippy
+- name: integration tests
+  dependencies:
+    - checkout
+  steps:
+  - name: rust lint
+    image: rust-container
+  - name: rust checks
+    image: rust-container
+    run: |
+      cargo clippy --integration=seeIfRussellIsPayingAttention
+- name: security tests
+  dependencies:
+    - checkout
+  steps:
+  - name: rust lint
+    image: rust-container
+  - name: rust checks
+    image: rust-container
+    run: |
+      cargo clippy --security
+---
+# Many to Many1
+name: my-assembly-line
+
+description: a pipeline to build everything
+events:
+- push: #do something on push
+stations:
+# needs to support this!!!
+- name: remote stations
+  remote: "github.com/null-channel/AssemblyLine/lines/my-awesome-pipline.yaml"
+  #path: "./thisOtherPipeline.yaml"
+  env:
+    - bob=notmyname
+- name: init
+  id: init
+  steps:
+  - name: do a thing
+    image: doing-it
+- name: Checkout Code
+  id: checkout
+  dependencies:
+  - init
+  steps:
+  - image: my-git-installer-container
+    metadata:
+      name: myName
+      description: something
+    run: |
+      grep myThing > &THING
+  - name: checkout Code
+    image: my-checkout-container
+  - name: Something else
+    image: my-something-container
+    run: |
+      aux | grep fun
+- name: build
+  id: build #defaults to name if not provided?
+  dependancies:
+  - checkout
+  steps:
+  - name: cargo build
+    image: rust-cargo
+- name: unit tests
+  dependencies:
+    - checkout
+  steps:
+  - name: rust lint
+    image: rust-container
+  - name: rust checks
+    image: rust-container
+    run: |
+      cargo clippy
+- name: integration tests
+  dependencies:
+    - checkout
+  steps:
+  - name: rust lint
+    image: rust-container
+  - name: rust checks
+    image: rust-container
+    run: |
+      cargo clippy --integration=seeIfRussellIsPayingAttention
+- name: security tests
+  dependencies:
+    - checkout
+  steps:
+  - name: rust lint
+    image: rust-container
+  - name: rust checks
+    image: rust-container
+    run: |
+      cargo clippy --security
+- name: third party build
+  id: third-party
+  steps:
+  - name: Contracts
+    image: contracts-image
+  - name: plugin
+    image: third-parting-image
+- name: package product
+  dependancies:
+    - id: checkout
+      volumeMount: "/code/"
+    - id: third-party
+      volumeMount: "/third-party/"
+    - id: build
+      volumeMount: "/target/"
+  steps:
+  - name: build ami
+    image: packer
+---
