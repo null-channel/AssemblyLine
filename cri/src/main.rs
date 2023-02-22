@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use cri_lib::{run_container, requests::RunContainerRequest, requests::CleanUp};
+use cri_lib::{requests::CleanUp, requests::RunContainerRequest, run_container};
 use log::info;
 
 #[tokio::main(flavor = "current_thread")]
@@ -9,8 +9,8 @@ async fn main() {
 
     info!("Running the test app for the Assembly Line CRI library");
     let request = RunContainerRequest {
-        image: "docker.io/busybox:latest".into(), 
-        cmd: vec!["sleep".to_string()], 
+        image: "docker.io/busybox:latest".into(),
+        cmd: vec!["sleep".to_string()],
         args: vec!["2m".to_string()],
         clean_up: CleanUp::After(12),
         envs: HashMap::new(),

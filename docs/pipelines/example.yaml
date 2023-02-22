@@ -1,0 +1,15 @@
+id: my-pipeline
+name: This is my very descriptive name
+description: a pipeline to build everything
+events:
+- on:
+    pr:
+      branches:
+      - main
+stations:
+- id: my-first-station
+  steps:
+  - id: checkout
+    image: busybox
+  - id: build
+    image: nginx
