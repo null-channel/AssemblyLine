@@ -17,7 +17,7 @@ We set out with a few goals in mind.
 
 ### HLD
 
-We will use an agent server architecture, the server does not run pipelines, just manages who does what when.
+We will use an agent server architecture, the server does not run pipelines, just manages who does what when. The agent should be able to run without connection to the server, but then would also not have access to anything the server provides like access to other runners, env vars, secrets or other things provided by the server.
 
 
 Office hours will be held every first the third tuesday of a month.
