@@ -1,5 +1,5 @@
-use std::collections::HashMap;
 use crate::runtime::v1::KeyValue;
+use std::collections::HashMap;
 
 #[derive(Debug)]
 pub struct RunContainerRequest {
@@ -14,14 +14,14 @@ pub struct RunContainerRequest {
 pub enum CleanUp {
     Never,
     After(u64),
-    Immediate
+    Immediate,
 }
 
 impl Default for RunContainerRequest {
     fn default() -> Self {
-        RunContainerRequest { 
-            image: String::default(), 
-            cmd: vec![], 
+        RunContainerRequest {
+            image: String::default(),
+            cmd: vec![],
             args: vec![],
             clean_up: CleanUp::Immediate,
             envs: HashMap::new(),
@@ -30,15 +30,15 @@ impl Default for RunContainerRequest {
 }
 
 impl RunContainerRequest {
-   // E0117 stops me from implementing From as KeyValue is generated and HashMap<T,U> is std lib
-   pub(crate) fn envs_as_vec(&self) -> Vec<KeyValue> {
+    // E0117 stops me from implementing From as KeyValue is generated and HashMap<T,U> is std lib
+    pub(crate) fn envs_as_vec(&self) -> Vec<KeyValue> {
         let mut result = vec![];
-        self.envs
-            .iter()
-            .for_each(|(key, value)| result.push(KeyValue { 
-                key: String::from(key), 
-                value: String::from(value) 
-            }));
+        self.envs.iter().for_each(|(key, value)| {
+            result.push(KeyValue {
+                key: String::from(key),
+                value: String::from(value),
+            })
+        });
         result
-   }
+    }
 }

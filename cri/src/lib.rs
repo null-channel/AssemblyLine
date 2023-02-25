@@ -1,12 +1,12 @@
-use std::collections::HashMap;
 use log::{debug, error};
-use tonic::transport::Channel;
 use runtime::v1::{
     image_service_client::ImageServiceClient, runtime_service_client::RuntimeServiceClient,
-    CreateContainerRequest, ImageSpec, LinuxPodSandboxConfig, ListImagesRequest, PullImageRequest,
-    RunPodSandboxRequest, VersionRequest, ListContainersRequest, Mount, RemoveContainerRequest, 
-    RemovePodSandboxRequest, StartContainerRequest,
+    CreateContainerRequest, ImageSpec, LinuxPodSandboxConfig, ListContainersRequest,
+    ListImagesRequest, Mount, PullImageRequest, RemoveContainerRequest, RemovePodSandboxRequest,
+    RunPodSandboxRequest, StartContainerRequest, VersionRequest,
 };
+use std::collections::HashMap;
+use tonic::transport::Channel;
 
 mod runtime {
     pub mod v1 {
@@ -14,13 +14,12 @@ mod runtime {
     }
 }
 
-pub mod requests;
 mod channel;
-use requests::*;
+pub mod requests;
 use channel::*;
+use requests::*;
 
-pub async fn run_container(request: RunContainerRequest) 
-    -> Result<(), Box<dyn std::error::Error>> {
+pub async fn run_container(request: RunContainerRequest) -> Result<(), Box<dyn std::error::Error>> {
     let Ok(channel) = create_channel_to_unix_socket().await else {
         error!("Failed to connect to your CRI service - this game is over...");
         return Err("Failed to connect to the CRI service".into())
@@ -39,7 +38,6 @@ pub async fn run_container(request: RunContainerRequest)
 
     Ok(())
 }
-
 
 async fn get_version(
     client: &mut RuntimeServiceClient<Channel>,
@@ -89,7 +87,7 @@ async fn pull_image(
 
 async fn create_container(
     client: &mut RuntimeServiceClient<Channel>,
-    request: RunContainerRequest
+    request: RunContainerRequest,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let pod_sandbox_config = runtime::v1::PodSandboxConfig {
         metadata: Some(runtime::v1::PodSandboxMetadata {
@@ -115,7 +113,6 @@ async fn create_container(
         runtime_handler: "".into(),
     };
 
-
     let mut container_id: String = "".into();
     let should_create_container = {
         let list_containers_response = client
@@ -138,7 +135,7 @@ async fn create_container(
                 .id
                 .clone();
         }
-        
+
         !container_exists
     };
 
@@ -228,7 +225,7 @@ async fn create_container(
         .remove_pod_sandbox(RemovePodSandboxRequest { pod_sandbox_id })
         .await?;
 
-        Ok(())
+    Ok(())
 }
 
 #[cfg(test)]

@@ -1,17 +1,10 @@
-use serde::{Serialize, Deserialize};
-
-
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
-pub struct StationConfig {
-
-}
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
-pub struct StationInput {
-
-}
+pub struct StationConfig {}
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
-pub struct StationOutput {
+pub struct StationInput {}
 
-}
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
+pub struct StationOutput {}

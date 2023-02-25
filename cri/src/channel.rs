@@ -1,5 +1,5 @@
 use tokio::net::UnixStream;
-use tonic::transport::{Endpoint, Channel, Uri};
+use tonic::transport::{Channel, Endpoint, Uri};
 use tower::service_fn;
 
 pub async fn create_channel_to_unix_socket() -> Result<Channel, Box<dyn std::error::Error>> {

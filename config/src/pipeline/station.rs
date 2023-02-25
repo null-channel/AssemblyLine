@@ -1,15 +1,17 @@
-use serde::{Serialize, Deserialize};
 use super::{
     metadata::Metadata,
-    station_config::{StationInput,StationOutput,StationConfig},
-    step::Step
+    station_config::{StationConfig, StationInput, StationOutput},
+    step::Step,
 };
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct Station {
     /// The name of the station.
+    #[serde(flatten)]
     pub metadata: Metadata,
     /// The ids of the stations that this station depends on.
+    #[serde(default)]
     pub dependencies: Vec<String>,
     /// The input of the station.
     pub input: Option<StationInput>,
