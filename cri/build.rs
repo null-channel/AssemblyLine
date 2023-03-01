@@ -6,6 +6,5 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .build_server(true)
         .compile(PROTO_FILES, &["vendor/"])
         .expect("Failed to generate GRPC bindings");
-
     Ok(())
 }

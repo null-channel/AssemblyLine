@@ -1,17 +1,13 @@
-use sqlx::any::AnyPool;
-use sqlx::database::Database;
-use sqlx::error::Error;
-use sqlx::pool::PoolConnection;
-use sqlx::postgres::PgPool;
-use sqlx::sqlite::{SqliteConnectOptions, SqlitePool};
+use sqlx::sqlite::{ SqlitePool};
+
 
 pub struct ConnectionManager {
-    pool: AnyPool,
+    pub pool: SqlitePool,
 }
 
 impl ConnectionManager {
     pub async fn new(url: String) -> anyhow::Result<Self> {
-        let pool = AnyPool::connect(&url).await?;
+        let pool = SqlitePool::connect(&url).await?;
         Ok(Self { pool })
     }
 }

@@ -1,13 +1,31 @@
 mod config;
 mod database;
-use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
+use actix_web::{get, post, App, HttpResponse, HttpServer, Responder};
 use database::connection_manager::ConnectionManager;
+use std::env;
 
 #[tokio::main]
-async fn main() -> std::io::Result<()> {
+async fn main() -> anyhow::Result<()> {
     // Get the server config
 
     // Get the database connection manager
+    //let con_man = ConnectionManager::new(env::var("DATABASE_URL")?).await?;
+
+    let con_man = ConnectionManager::new(env::var("DATABASE_URL")?).await?;
+
+    let mut con = con_man.pool.acquire().await?;
+
+    let id = sqlx::query!(
+        r#"
+        CREATE TABLE IF NOT EXISTS repositories (
+            id INTEGER PRIMARY KEY,
+            description TEXT NOT NULL
+        )
+        "#,
+    )
+    .execute(&mut con)
+    .await?
+    .last_insert_rowid();
 
     // start listening to github webhook
 
@@ -16,6 +34,7 @@ async fn main() -> std::io::Result<()> {
         .bind(("127.0.0.1", 8080))?
         .run()
         .await
+        .map_err(|e| e.into())
 }
 
 #[get("/agent/{id}")]
