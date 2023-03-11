@@ -1,8 +1,10 @@
 mod config;
 mod database;
+mod github;
 use actix_web::{get, post, App, HttpResponse, HttpServer, Responder};
 use database::connection_manager::ConnectionManager;
 use std::env;
+use github::webhook::start_github_webhook;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -10,6 +12,8 @@ async fn main() -> anyhow::Result<()> {
 
     // Get the database connection manager
     //let con_man = ConnectionManager::new(env::var("DATABASE_URL")?).await?;
+
+    let _gh = start_github_webhook().await?.await;
 
     let con_man = ConnectionManager::new(env::var("DATABASE_URL")?).await?;
 
