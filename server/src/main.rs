@@ -8,6 +8,8 @@ use github::webhook::start_github_webhook;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
+    std::env::set_var("RUST_LOG", "actix_web=trace");
+
     // Get the server config
 
     // Get the database connection manager

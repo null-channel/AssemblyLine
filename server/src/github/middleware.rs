@@ -3,9 +3,11 @@ use std::future::{ready, Ready};
 
 use actix_web::{
     dev::{forward_ready, Service, ServiceRequest, ServiceResponse, Transform, Payload},
-    Error,
+    Error, web::BytesMut,
 };
 use futures_util::future::LocalBoxFuture;
+use urlencoding::decode;
+use futures::StreamExt;
 
 // There are two steps in middleware processing.
 // 1. Middleware initialization, middleware factory gets called with
@@ -36,7 +38,7 @@ where
 pub struct VerifyGithubSignatureMiddleware<S> {
     service: S,
 }
-
+const MAX_SIZE: usize = 262_144;
 impl<S, B> Service<ServiceRequest> for VerifyGithubSignatureMiddleware<S>
 where
     S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
@@ -49,41 +51,16 @@ where
 
     forward_ready!(service);
 
-    /*
-    But actually, the logic should look maybe something like this? 
-    use std::io::Read;
-
-        let r = req.clone();
-        let s = r.headers()
-            .get("X-Hub-Signature")
-            .ok_or(ErrorUnauthorized(ParseError::Header))?
-            .to_str()
-            .map_err(ErrorUnauthorized)?;
-        // strip "sha1=" from the header
-        let (_, sig) = s.split_at(5);
-
-        let secret = env::var("GITHUB_SECRET").unwrap();
-        let mut body = String::new();
-        req.read_to_string(&mut body)
-            .map_err(ErrorInternalServerError)?;
-
-        if is_valid_signature(&sig, &body, &secret) {
-            Ok(Started::Done)
-        } else {
-            Err(ErrorUnauthorized(ParseError::Header))
-        }
-         */
-
     // This is the actual middleware logic
     fn call(&self, req: ServiceRequest) -> Self::Future {
         println!("Hi from start. You requested: {}", req.path());
+
+        // Validate the signature here
 
         let fut = self.service.call(req);
 
         Box::pin(async move {
             let res = fut.await?;
-
-            println!("Hi from response");
             Ok(res)
         })
     }
