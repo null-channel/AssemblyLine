@@ -18,3 +18,7 @@ Cargo.lock
 
 # rust
 **/target/*
+
+# sqlite
+*.db-shm
+*.db-wal
