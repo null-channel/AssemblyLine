@@ -1,5 +1,4 @@
-use sqlx::sqlite::{ SqlitePool};
-
+use sqlx::sqlite::SqlitePool;
 
 pub struct ConnectionManager {
     pub pool: SqlitePool,
