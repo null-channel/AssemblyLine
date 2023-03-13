@@ -1,7 +1,7 @@
-use serde::{Deserialize,Serialize};
+use serde::{Deserialize, Serialize};
 /// An incoming PushEvent from Github Webhook.
 
-#[derive(Deserialize,Serialize,Debug,Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct PullRequestEvent {
     pub url: String,
     pub id: i64,

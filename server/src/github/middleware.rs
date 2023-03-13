@@ -1,13 +1,11 @@
 use std::future::{ready, Ready};
 
-
 use actix_web::{
-    dev::{forward_ready, Service, ServiceRequest, ServiceResponse, Transform, Payload},
-    Error, web::BytesMut,
+    dev::{forward_ready, Payload, Service, ServiceRequest, ServiceResponse, Transform},
+    web::BytesMut,
+    Error,
 };
 use futures_util::future::LocalBoxFuture;
-use urlencoding::decode;
-use futures::StreamExt;
 
 // There are two steps in middleware processing.
 // 1. Middleware initialization, middleware factory gets called with
@@ -16,36 +14,38 @@ use futures::StreamExt;
 pub struct VerifyGithubSignatureFactory;
 
 // Middleware factory is `Transform` trait
-// `S` - type of the next service
-// `B` - type of response's body
-impl<S, B> Transform<S, ServiceRequest> for VerifyGithubSignatureFactory
+// `NextService` - type of the next service
+// `ResponseBody` - type of response's body
+impl<NextService, ResponseBody> Transform<NextService, ServiceRequest>
+    for VerifyGithubSignatureFactory
 where
-    S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
-    S::Future: 'static,
-    B: 'static,
+    NextService: Service<ServiceRequest, Response = ServiceResponse<ResponseBody>, Error = Error>,
+    NextService::Future: 'static,
+    ResponseBody: 'static,
 {
-    type Response = ServiceResponse<B>;
+    type Response = ServiceResponse<ResponseBody>;
     type Error = Error;
     type InitError = ();
-    type Transform = VerifyGithubSignatureMiddleware<S>;
+    type Transform = VerifyGithubSignatureMiddleware<NextService>;
     type Future = Ready<Result<Self::Transform, Self::InitError>>;
 
-    fn new_transform(&self, service: S) -> Self::Future {
+    fn new_transform(&self, service: NextService) -> Self::Future {
         ready(Ok(VerifyGithubSignatureMiddleware { service }))
     }
 }
 
-pub struct VerifyGithubSignatureMiddleware<S> {
-    service: S,
+pub struct VerifyGithubSignatureMiddleware<NextService> {
+    service: NextService,
 }
-const MAX_SIZE: usize = 262_144;
-impl<S, B> Service<ServiceRequest> for VerifyGithubSignatureMiddleware<S>
+
+impl<NextService, ResponseBody> Service<ServiceRequest>
+    for VerifyGithubSignatureMiddleware<NextService>
 where
-    S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
-    S::Future: 'static,
-    B: 'static,
+    NextService: Service<ServiceRequest, Response = ServiceResponse<ResponseBody>, Error = Error>,
+    NextService::Future: 'static,
+    ResponseBody: 'static,
 {
-    type Response = ServiceResponse<B>;
+    type Response = ServiceResponse<ResponseBody>;
     type Error = Error;
     type Future = LocalBoxFuture<'static, Result<Self::Response, Self::Error>>;
 

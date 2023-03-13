@@ -3,8 +3,8 @@ mod database;
 mod github;
 use actix_web::{get, post, App, HttpResponse, HttpServer, Responder};
 use database::connection_manager::ConnectionManager;
-use std::env;
 use github::webhook::start_github_webhook;
+use std::env;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
