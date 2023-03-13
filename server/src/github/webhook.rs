@@ -1,23 +1,16 @@
-use std::env;
-
 use crate::github::middleware::VerifyGithubSignatureFactory;
-use actix_web::error::{ErrorUnauthorized, ParseError};
 use actix_web::{
     dev::{Server, Service as _},
     error, post,
-    web::{self, Bytes, JsonConfig},
+    web::{self, JsonConfig},
     App, HttpResponse, HttpServer, Responder, Result,
 };
 use futures::StreamExt;
-use futures_util::future::FutureExt;
 use urlencoding::decode;
 
 use super::data::webhook_event::WebhookEvent;
 
 pub async fn start_github_webhook() -> anyhow::Result<Server> {
-    //let secret = env::var("GITHUB_SECRET")?;
-    //let port = env::var("GITHUB_WEBHOOK_PORT")?;
-
     let mut app = HttpServer::new(move || {
         App::new().wrap(VerifyGithubSignatureFactory).service(
             web::scope("/v1/github")
@@ -49,15 +42,13 @@ async fn github_raw_webhook_handler(mut payload: web::Payload) -> impl Responder
 
     let body = decode(&body_str.as_str());
 
-    println!("Received webhook: {:?}", body);
-    println!("======================================");
+    println!("Received raw webhook: {:?}", body);
     println!("======================================");
     Ok(HttpResponse::Ok().json("object"))
 }
 #[post("/webhook")]
 async fn github_webhook_handler(event: web::Json<WebhookEvent>) -> Result<String> {
     println!("Received webhook: {:?}", event.into_inner());
-    println!("======================================");
     println!("======================================");
 
     Ok("Ok".into())
