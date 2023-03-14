@@ -1,8 +1,11 @@
-use serde::{Deserialize,Serialize};
+use serde::{Deserialize, Serialize};
 
-use super::{pull_request::PullRequestEvent, check_run::CheckRunEvent, repository::Repository, organization::Organization, sender::Sender};
+use super::{
+    check_run::CheckRunEvent, organization::Organization, pull_request::PullRequestEvent,
+    repository::Repository, sender::Sender,
+};
 /// An incoming WebHookEvent from Github Webhook.
-#[derive(Deserialize,Serialize,Debug,Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct WebhookEvent {
     pub action: String,
 
