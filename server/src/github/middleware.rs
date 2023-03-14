@@ -13,8 +13,6 @@ use futures_util::future::LocalBoxFuture;
 pub struct VerifyGithubSignatureFactory;
 
 // Middleware factory is `Transform` trait
-// `NextService` - type of the next service
-// `ResponseBody` - type of response's body
 impl<NextService, ResponseBody> Transform<NextService, ServiceRequest>
     for VerifyGithubSignatureFactory
 where
